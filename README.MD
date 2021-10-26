@@ -110,3 +110,14 @@ const allUsersResponse = await Api.asMany(UserModel).get('/api/users');
 allUsersResponse.get(); // [UserModel, UserModel]
 
 ```
+
+###  There's also some aliases for these methods which you can use depending on your naming preference:
+
+#### many:
+- fromMany()
+- toMany()
+- many()
+#### one:
+- fromOne()
+- toOne()
+- one()

@@ -7,8 +7,22 @@ export class ApiHandler<T extends DataTransferObject<any>> {
 
 	constructor(private dto: new () => T) {}
 
+	asMany<M extends DataTransferObject<any>>(dto: new () => M): ManyResolver<M> {
+		return this.toMany(dto);
+	}
+	many<M extends DataTransferObject<any>>(dto: new () => M): ManyResolver<M> {
+		return this.toMany(dto);
+	}
+
 	toMany<M extends DataTransferObject<any>>(dto: new () => M): ManyResolver<M> {
 		return new ManyResolver<M>(new ApiHandler<M>(dto), dto);
+	}
+
+	asOne<M extends DataTransferObject<any>>(dto: new () => M): OneResolver<M> {
+		return this.toOne(dto);
+	}
+	one<M extends DataTransferObject<any>>(dto: new () => M): OneResolver<M> {
+		return this.toOne(dto);
 	}
 
 	toOne<M extends DataTransferObject<any>>(dto: new () => M): OneResolver<M> {
