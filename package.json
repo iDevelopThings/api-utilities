@@ -13,15 +13,15 @@
   "description": "Make api requests and convert them to Data Transfer Objects(classes) on the fly. Along with helpers to help with handling errors.",
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "scripts": {
     "serve-dev": "ts-node-dev src/test/index.ts",
-    "build" : "tsc -b --clean && tsc -b && rm -rf dist/test"
+    "build": "tsc -b --clean && tsc -b && rm -rf dist/test"
   },
   "devDependencies": {
+    "ts-node-dev": "^1.1.8",
     "tslib": "^2.3.1",
-    "typescript": "^4.4.3",
-    "ts-node-dev": "^1.1.8"
+    "typescript": "^4.4.3"
   },
   "dependencies": {
     "axios": "^0.23.0",
