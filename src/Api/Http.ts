@@ -21,7 +21,7 @@ export class Http {
 		return this;
 	}
 
-	public static setAuthorizationToken(token: string, prefix: string = 'Bearer ') {
+	public static setAuthorizationToken(token: string, prefix: string = 'Bearer') {
 		if (!token) {
 			this._token = null;
 			delete this._headers['Authorization'];

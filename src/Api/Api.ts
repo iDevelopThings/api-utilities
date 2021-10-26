@@ -24,7 +24,7 @@ export class ApiHandler<T extends DataTransferObject<any>> {
 		}
 	}
 
-	setAuthorizationToken(token: string, prefix: string = 'Bearer ') {
+	setAuthorizationToken(token: string, prefix: string = 'Bearer') {
 		Http.setAuthorizationToken(token, prefix);
 	}
 }
