@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "lib": [
+      "es2020",
+      "DOM"
+    ],
+    "module": "commonjs",
+    "outDir": "./dist",
+    "target": "es2020",
+    "importsNotUsedAsValues": "error",
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "allowJs": true,
+    "checkJs": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "declaration": true
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}

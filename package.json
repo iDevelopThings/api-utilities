@@ -1,0 +1,32 @@
+{
+  "name": "api-utilities",
+  "author": {
+    "name": "iDevelopThings",
+    "email": "sam@idevelopthings.com",
+    "url": "https://github.com/idevelopthings"
+  },
+  "repository": {
+    "url": "https://github.com/idevelopthings/api-utilities",
+    "type": "git"
+  },
+  "license": "MIT",
+  "description": "Make api requests and convert them to Data Transfer Objects(classes) on the fly. Along with helpers to help with handling errors.",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "version": "0.0.1",
+  "scripts": {
+    "serve-dev": "ts-node-dev src/test/index.ts",
+    "build" : "tsc -b --clean && tsc -b && rm -rf dist/test"
+  },
+  "devDependencies": {
+    "tslib": "^2.3.1",
+    "typescript": "^4.4.3",
+    "ts-node-dev": "^1.1.8"
+  },
+  "dependencies": {
+    "axios": "^0.23.0",
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1",
+    "reflect-metadata": "^0.1.13"
+  }
+}
