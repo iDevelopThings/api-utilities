@@ -13,6 +13,11 @@ We call the resulting class a "Data Transfer Object".
 
 ## Getting things set-up
 
+```
+yarn add api-utilities
+npm install api-utilities
+```
+
 First we need to initiate the DataTransferObject Manager like so:
 
 ```ts
