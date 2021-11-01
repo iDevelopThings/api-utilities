@@ -1,17 +1,18 @@
+import type {AxiosResponse} from "axios";
 import type {DataTransferObject} from "../../Dto";
-import type {ApiHandler} from "../Api";
-import {Http} from "../Http";
+import type {Http} from "../Http";
 import {RequestMethod} from "../RequestMethod";
-import {ApiResponse} from "./ApiResponse";
+import type {ApiResponse} from "./ApiResponse";
 
 export class ApiResponseResolver<T extends DataTransferObject<any>, R> {
 
 	public throwOnError: boolean = false;
 
 	constructor(
-		private handler: ApiHandler<T>,
+		protected _http: Http,
 		protected dto: new () => T,
-		protected type: 'one' | 'many' = 'one'
+		protected type: 'one' | 'many' = 'one',
+		protected apiResponseResolver: new (dto: new () => T, response: AxiosResponse) => ApiResponse<T, R>
 	) { }
 
 	public throw(shouldThrowOnError: boolean = true): ApiResponseResolver<T, R> {
@@ -29,20 +30,20 @@ export class ApiResponseResolver<T extends DataTransferObject<any>, R> {
 
 		try {
 			if (this.type === 'one') {
-				response = await Http.one(method, endpoint, data);
+				response = await this._http.one(method, endpoint, data);
 			}
 			if (this.type === 'many') {
-				response = await Http.many(method, endpoint, data);
+				response = await this._http.many(method, endpoint, data);
 			}
 		} catch (error) {
 			if (error?.response && !this.throwOnError) {
-				return new ApiResponse<T, R>(this.dto, error.response);
+				return new this.apiResponseResolver(this.dto, error.response);
 			}
 
 			throw error;
 		}
 
-		return new ApiResponse<T, R>(this.dto, response);
+		return new this.apiResponseResolver(this.dto, response);
 	}
 
 	async get(endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {

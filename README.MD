@@ -13,6 +13,7 @@ We call the resulting class a "Data Transfer Object".
 
 ## Getting things set-up
 
+SomeMemorableWord
 ```
 yarn add api-utilities
 npm install api-utilities
@@ -33,7 +34,7 @@ Now, lets set our base information for the api handler.
 ```ts
 import {Api} from "api-utilities";
 
-Api.configure({
+const api = Api.create({
 	baseUrl : 'your apis base url, for ex: https://my.api.com',
 	headers : {
 		'Content-Type' : 'application/json',
@@ -42,10 +43,10 @@ Api.configure({
 })
 
 // If you need to send JWT using the authorization header, you can configure it above or...
-Api.setAuthorizationToken('jwt');
+api.setAuthorizationToken('jwt');
 // This results in the header: "Authorization: Bearer jwt" being sent with requests.
 // You can customise the prefix also, ie the "Bearer" part.
-Api.setAuthorizationToken('jwt', "CustomToken");
+api.setAuthorizationToken('jwt', "CustomToken");
 // This results in the header: "Authorization: CustomToken jwt" being sent with requests.
 ```
 
@@ -80,7 +81,7 @@ UserModel.create([plainUserObject, plainUserObject])// returns [UserModel, UserM
 
 ```ts
 
-const response = await Api.asOne(UserModel).get('/api/user/me');
+const response = await api.asOne(UserModel).get('/api/user/me');
 // This will return an `ApiResponse` instance.
 // This class has some additional methods to make life a little easier
 // I personally got tired of dealing with try/catches for most regular api errors
@@ -121,3 +122,5 @@ allUsersResponse.get(); // [UserModel, UserModel]
 - fromOne()
 - toOne()
 - one()
+#### paginated:
+- paginated()

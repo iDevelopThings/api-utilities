@@ -2,26 +2,26 @@ import axios, {AxiosResponse, Method} from "axios";
 
 export class Http {
 
-	static _token: string                      = null;
-	static _baseUrl: string                    = null;
-	static _headers: { [key: string]: string } = {
+	_token: string                      = null;
+	_baseUrl: string                    = null;
+	_headers: { [key: string]: string } = {
 		'Content-Type' : 'application/json',
 		'Accept'       : 'application/json',
 	};
 
-	public static setBaseUrl(url: string) {
+	public setBaseUrl(url: string) {
 		this._baseUrl = url;
 
 		return this;
 	}
 
-	public static setBaseHeaders(headers: { [key: string]: string }) {
+	public setBaseHeaders(headers: { [key: string]: string }) {
 		this._headers = headers;
 
 		return this;
 	}
 
-	public static setAuthorizationToken(token: string, prefix: string = 'Bearer') {
+	public setAuthorizationToken(token: string, prefix: string = 'Bearer') {
 		if (!token) {
 			this._token = null;
 			delete this._headers['Authorization'];
@@ -35,15 +35,15 @@ export class Http {
 		return this;
 	}
 
-	public static headers(): { [key: string]: string } {
+	public headers(): { [key: string]: string } {
 		return this._headers;
 	}
 
-	public static apiBaseUrl(): string {
+	public apiBaseUrl(): string {
 		return this._baseUrl;
 	}
 
-	private static _instance() {
+	private _instance() {
 		return axios.create({
 			baseURL         : this.apiBaseUrl(),
 			headers         : this._headers,
@@ -51,7 +51,7 @@ export class Http {
 		});
 	}
 
-	public static async many<T extends any[]>(method: Method, endpoint: string, params: object = {}): Promise<AxiosResponse<T>> {
+	public async many<T extends any[]>(method: Method, endpoint: string, params: object = {}): Promise<AxiosResponse<T>> {
 		let dataProp = 'data';
 
 		if (['GET', 'DELETE'].includes(method.toUpperCase())) {
@@ -65,7 +65,7 @@ export class Http {
 		});
 	}
 
-	public static async one<T extends any>(method: Method, endpoint: string, params: object = {}): Promise<AxiosResponse<T>> {
+	public async one<T extends any>(method: Method, endpoint: string, params: object = {}): Promise<AxiosResponse<T>> {
 		let dataProp = 'data';
 
 		if (['GET', 'DELETE'].includes(method.toUpperCase())) {
@@ -79,25 +79,25 @@ export class Http {
 		});
 	}
 
-	public static get<T>(endpoint: string, params: object = {}): Promise<any> {
+	public get<T>(endpoint: string, params: object = {}): Promise<any> {
 		return this._instance().get<T>(endpoint, {
 			params : params,
 		});
 	}
 
-	public static put<T>(endpoint: string, params: object = {}): Promise<any> {
+	public put<T>(endpoint: string, params: object = {}): Promise<any> {
 		return this._instance().put<T>(endpoint, params);
 	}
 
-	public static patch<T>(endpoint: string, params: object = {}): Promise<any> {
+	public patch<T>(endpoint: string, params: object = {}): Promise<any> {
 		return this._instance().patch<T>(endpoint, params);
 	}
 
-	public static post<T>(endpoint: string, params: object = {}): Promise<any> {
+	public post<T>(endpoint: string, params: object = {}): Promise<any> {
 		return this._instance().post<T>(endpoint, params);
 	}
 
-	public static delete<T>(endpoint: string, params: object = {}): Promise<any> {
+	public delete<T>(endpoint: string, params: object = {}): Promise<any> {
 		return this._instance().delete<T>(endpoint, {
 			params : params,
 		});
