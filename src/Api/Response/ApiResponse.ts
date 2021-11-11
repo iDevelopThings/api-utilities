@@ -7,7 +7,7 @@ export class ApiResponse<T extends DataTransferObject<any>, R> {
 	protected response: AxiosResponse;
 	protected _validationErrors: { [key: string]: string } = {};
 
-	constructor(dto: new () => T, response: AxiosResponse) {
+	constructor(dto: new () => T, response: AxiosResponse = null) {
 		this.dto      = dto;
 		this.response = response;
 
@@ -20,7 +20,7 @@ export class ApiResponse<T extends DataTransferObject<any>, R> {
 	 * @returns {{[p: string]: any}}
 	 */
 	get data(): { [key: string]: any } {
-		return this.response.data as { [key: string]: any };
+		return this?.response?.data as { [key: string]: any } || {};
 	}
 
 	/**
@@ -37,7 +37,7 @@ export class ApiResponse<T extends DataTransferObject<any>, R> {
 	 * @returns {boolean}
 	 */
 	get isSuccessful(): boolean {
-		return this.response.status >= 200 && this.response.status < 300;
+		return this?.response?.status >= 200 && this?.response?.status < 300;
 	}
 
 	/**
@@ -46,7 +46,7 @@ export class ApiResponse<T extends DataTransferObject<any>, R> {
 	 * @returns {boolean}
 	 */
 	get hasValidationErrors(): boolean {
-		return this.response.status === 422;
+		return this?.response?.status === 422;
 	}
 
 	/**
@@ -55,13 +55,17 @@ export class ApiResponse<T extends DataTransferObject<any>, R> {
 	 * @returns {R}
 	 */
 	get(): R {
-		return (this.dto as any).create(this.response.data);
+		if (!this.dto) {
+			return this?.response?.data as R;
+		}
+
+		return (this.dto as any).create(this?.response?.data);
 	}
 
 	private setValidationErrors() {
 		if (this.hasValidationErrors) {
-			for (let dataKey in this.data.data) {
-				this._validationErrors[dataKey] = (this.data.data[dataKey] || null);
+			for (let dataKey in this?.data?.data) {
+				this._validationErrors[dataKey] = (this?.data?.data[dataKey] || null);
 			}
 		}
 	}
@@ -93,5 +97,21 @@ export class ApiResponse<T extends DataTransferObject<any>, R> {
 	 */
 	hasValidationError<E extends keyof T>(key: E): boolean {
 		return !!this._validationErrors[key as string];
+	}
+
+	get retryCount(): number {
+		return ((this?.response as any)?.config?.retries?.retryCount || 0);
+	}
+
+	get didRetry(): boolean {
+		return this.retryCount > 0;
+	}
+
+	get lastRequestTime(): number {
+		return (this?.response as any)?.config?.retries?.lastRequestTime || null;
+	}
+
+	get statusCode(): number {
+		return this?.response?.status;
 	}
 }

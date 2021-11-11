@@ -1,22 +1,7 @@
 import {plainToClass} from "class-transformer";
 import {validateSync} from 'class-validator';
-import {Http} from "../Api/Http";
 import {DataTransferObjectManager} from "./Manager";
 import {ValidationErrors} from "./ValidationErrors";
-
-//interface DataTransferObjectContract<M> {
-//	validate(groups?: string[] | null): void;
-//}
-
-//interface DataTransferObjectContractConstructor<T> {
-//	new(...args: any[]): DataTransferObjectContract<T>;
-//
-//	create<M extends DataTransferObjectContract<M>, Value = object | object[]>(
-//		this: DataTransferObjectContractConstructor<M>,
-//		data: Value,
-//		validate?: boolean
-//	): (Value extends object[] ? M[] : M);
-//}
 
 export class DataTransferObject<T> /*implements DataTransferObjectContract<T>*/ {
 
@@ -49,15 +34,5 @@ export class DataTransferObject<T> /*implements DataTransferObjectContract<T>*/ 
 			throw new ValidationErrors(validationErrors);
 		}
 	}
-
-//	public static async getMany<M extends DataTransferObjectContract<M>, Value = object | object[]>(
-//		this: DataTransferObjectContractConstructor<M>,
-//		endpoint: string,
-//		data: object = {}
-//	): Promise<M[]> {
-//		const res = await Http.many('GET', endpoint, data);
-//
-//		return this.create(res);
-//	}
 
 }

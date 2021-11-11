@@ -11,7 +11,7 @@ export class ApiResponseResolver<T extends DataTransferObject<any>, R> {
 	constructor(
 		protected _http: Http,
 		protected dto: new () => T,
-		protected type: 'one' | 'many' = 'one',
+		protected type: 'one' | 'many' | 'unknown' = 'one',
 		protected apiResponseResolver: new (dto: new () => T, response: AxiosResponse) => ApiResponse<T, R>
 	) { }
 
@@ -21,10 +21,10 @@ export class ApiResponseResolver<T extends DataTransferObject<any>, R> {
 		return this;
 	}
 
-	private async handleRequest(method: RequestMethod, endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
-		if (!this.dto) {
-			throw new Error('You first need to call "toOne(DataTransferObject)" or "toMany(DataTransferObject)" with a dto.');
-		}
+	public async request(method: RequestMethod, endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
+		// if (!this.dto) {
+		// 	throw new Error('You first need to call "toOne(DataTransferObject)" or "toMany(DataTransferObject)" with a dto.');
+		// }
 
 		let response = null;
 
@@ -34,6 +34,9 @@ export class ApiResponseResolver<T extends DataTransferObject<any>, R> {
 			}
 			if (this.type === 'many') {
 				response = await this._http.many(method, endpoint, data);
+			}
+			if (this.type === 'unknown') {
+				response = await this._http.request(method, endpoint, data);
 			}
 		} catch (error) {
 			if (error?.response && !this.throwOnError) {
@@ -47,31 +50,35 @@ export class ApiResponseResolver<T extends DataTransferObject<any>, R> {
 	}
 
 	async get(endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
-		return this.handleRequest(RequestMethod.GET, endpoint, data);
+		return this.request(RequestMethod.GET, endpoint, data);
 	}
 
 	async post(endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
-		return this.handleRequest(RequestMethod.POST, endpoint, data);
+		return this.request(RequestMethod.POST, endpoint, data);
 	}
 
 	async put(endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
-		return this.handleRequest(RequestMethod.PUT, endpoint, data);
+		return this.request(RequestMethod.PUT, endpoint, data);
 	}
 
 	async patch(endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
-		return this.handleRequest(RequestMethod.PATCH, endpoint, data);
+		return this.request(RequestMethod.PATCH, endpoint, data);
 	}
 
 	async delete(endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
-		return this.handleRequest(RequestMethod.DELETE, endpoint, data);
+		return this.request(RequestMethod.DELETE, endpoint, data);
 	}
 
 	async head(endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
-		return this.handleRequest(RequestMethod.HEAD, endpoint, data);
+		return this.request(RequestMethod.HEAD, endpoint, data);
 	}
 
 	async options(endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
-		return this.handleRequest(RequestMethod.OPTIONS, endpoint, data);
+		return this.request(RequestMethod.OPTIONS, endpoint, data);
 	}
+
+}
+
+export type RequestOptions = {
 
 }
