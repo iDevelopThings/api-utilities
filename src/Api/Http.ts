@@ -1,5 +1,5 @@
 import axios, {AxiosError, AxiosInstance, AxiosResponse, Method} from "axios";
-import isRetryAllowed from 'is-retry-allowed';
+import isRetryAllowed from "../Utility/IsRetryAllowed";
 
 /**
  * Implemented some of the logic from axios-retry package. So retry logic deserves some credits
