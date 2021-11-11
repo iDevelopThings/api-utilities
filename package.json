@@ -13,7 +13,7 @@
   "description": "Make api requests and convert them to Data Transfer Objects(classes) on the fly. Along with helpers to help with handling errors.",
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "scripts": {
     "serve-dev": "ts-node-dev src/test/index.ts",
     "test:error-handling": "ts-node-dev src/test/test-custom-error-handling.ts",
