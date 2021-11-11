@@ -1,4 +1,4 @@
-# 0.0.4
+# 0.0.5
 
 Added a nice way to handle errors which hooks into axios, auto retry handling on failed requests, some additional api response methods and a way to call
 endpoints manually(without a DTO) but still get an ApiResponse instance returned.
