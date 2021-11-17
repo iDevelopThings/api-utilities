@@ -17,6 +17,7 @@ export class DataTransferObject<T> /*implements DataTransferObjectContract<T>*/ 
 			if (Array.isArray(dto)) {
 				dto.forEach((d) => d.validate());
 			} else {
+				//@ts-ignore
 				dto.validate();
 			}
 		}

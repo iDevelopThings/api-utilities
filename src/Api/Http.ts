@@ -106,6 +106,10 @@ export class Http {
 			const currentState           = this.getCurrentState(config);
 			currentState.lastRequestTime = Date.now();
 
+			// Make sure we pass the headers, when we call setBaseHeaders() / setAuthorizationToken()
+			// after initialization, the instance is already created. We can't modify it's config.
+			config.headers = this._headers;
+
 			return config;
 		});
 
@@ -382,7 +386,7 @@ export class Http {
 			if (!shouldResetTimeout && config.timeout && currentState.lastRequestTime) {
 				const lastRequestDuration = Date.now() - currentState.lastRequestTime;
 				// Minimum 1ms timeout (passing 0 or less to XHR means no timeout)
-				config.timeout = Math.max(config.timeout - lastRequestDuration, 1);
+				config.timeout            = Math.max(config.timeout - lastRequestDuration, 1);
 			}
 
 			config.transformRequest = [(data) => data];
