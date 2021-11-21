@@ -1,4 +1,4 @@
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import {validateSync} from 'class-validator';
 import type {ValidatorOptions} from "class-validator/types/validation/ValidatorOptions";
 import type {DtoProperty, Magic} from "../index";
@@ -14,7 +14,7 @@ export class DataTransferObject<T> /*implements DataTransferObjectContract<T>*/ 
 		validate: boolean = true
 	): (Value extends object[] ? M[] : M) {
 
-		const dto = plainToClass<M, Value>(this, data) as (Value extends object[] ? M[] : M);
+		const dto = plainToInstance<M, Value>(this, data) as (Value extends object[] ? M[] : M);
 
 		if (DataTransferObject.useDtoValidation && validate) {
 			if (Array.isArray(dto)) {

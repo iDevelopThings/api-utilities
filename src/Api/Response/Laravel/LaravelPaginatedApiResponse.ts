@@ -1,4 +1,4 @@
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import type {DataTransferObject} from "../../../Dto";
 import {LaravelApiResponse} from "./LaravelApiResponse";
 import {LaravelPaginatedDto} from "./LaravelPaginatedDto";
@@ -12,7 +12,7 @@ export class LaravelPaginatedApiResponse<T extends DataTransferObject<any>> exte
 	 */
 	get(): LaravelPaginatedDto<T> {
 		const data      = (this.dto as any).create((this.response.data as any).data);
-		const paginated = plainToClass<LaravelPaginatedDto<T>, { [key: string]: any }>(LaravelPaginatedDto, this.response.data as object);
+		const paginated = plainToInstance<LaravelPaginatedDto<T>, { [key: string]: any }>(LaravelPaginatedDto, this.response.data as object);
 
 		paginated.data = data;
 

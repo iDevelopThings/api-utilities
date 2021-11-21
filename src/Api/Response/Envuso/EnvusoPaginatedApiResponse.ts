@@ -1,4 +1,4 @@
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import type {DataTransferObject} from "../../../Dto";
 import {EnvusoApiResponse} from "./EnvusoApiResponse";
 import {EnvusoPaginatedDto} from "./EnvusoPaginatedDto";
@@ -13,7 +13,7 @@ export class EnvusoPaginatedApiResponse<T extends DataTransferObject<any>, R ext
 	 */
 	get(): R {
 		const data      = (this.dto as any).create((this.response.data as any).data);
-		const paginated = plainToClass<EnvusoPaginatedDto<T>, { [key: string]: any }>(EnvusoPaginatedDto, this.response.data as object);
+		const paginated = plainToInstance<EnvusoPaginatedDto<T>, { [key: string]: any }>(EnvusoPaginatedDto, this.response.data as object);
 
 		paginated.data = data;
 
