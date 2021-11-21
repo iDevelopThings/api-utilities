@@ -5,7 +5,7 @@
       "ESNext",
       "DOM"
     ],
-    "module": "commonjs",
+    "module": "ESNext",
     "outDir": "./dist",
     "target": "ESNext",
     "importsNotUsedAsValues": "error",
