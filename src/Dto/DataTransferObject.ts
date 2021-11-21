@@ -1,7 +1,7 @@
 import {plainToClass} from "class-transformer";
 import {validateSync} from 'class-validator';
 import type {ValidatorOptions} from "class-validator/types/validation/ValidatorOptions";
-import type {DtoProperty, Magic} from "../api-utils";
+import type {DtoProperty, Magic} from "../index";
 import {ValidationErrors} from "./ValidationErrors";
 
 export class DataTransferObject<T> /*implements DataTransferObjectContract<T>*/ {

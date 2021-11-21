@@ -1,5 +1,5 @@
 import type {AxiosResponse} from "axios";
-import type {DtoProperties, DtoProperty} from "../../api-utils";
+import type {DtoProperty} from "../../index";
 import {Validator} from "../../Dto/Validator";
 import type {DataTransferObject} from "../../Dto";
 

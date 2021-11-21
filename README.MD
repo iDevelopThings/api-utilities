@@ -9,29 +9,19 @@ We use :
 - [https://github.com/typestack/class-validator](https://github.com/typestack/class-validator) for doing validation on the classes also.
 - [https://github.com/axios/axios](https://github.com/axios/axios) for sending requests
 
-We call the resulting class a "Data Transfer Object".
 
-## Getting things set-up
+# Documentation:
 
-```
-yarn add api-utilities
-npm install api-utilities
-```
+[https://api-utilities.idt.dev](https://api-utilities.idt.dev)
 
-First we need to initiate the DataTransferObject Manager like so:
+## Preview
 
-```ts
-import {DataTransferObjectManager} from "api-utilities";
+Please refer to the documentation above to learn about how api-utilities works.
 
-DataTransferObjectManager.initiate();
-```
-
-This will allow the manager to pick up any DataTransferObjects configured.
-
-Now, lets set our base information for the api handler.
+Here's a little sample code as a teaser :D
 
 ```ts
-import {Api} from "api-utilities";
+import {Api, DataTransferObject} from "api-utilities";
 
 const api = Api.create({
 	baseUrl : 'your apis base url, for ex: https://my.api.com',
@@ -40,149 +30,36 @@ const api = Api.create({
 		'Accept'       : 'application/json',
 	}
 })
-
-// If you need to send JWT using the authorization header, you can configure it above or...
 api.setAuthorizationToken('jwt');
-// This results in the header: "Authorization: Bearer jwt" being sent with requests.
-// You can customise the prefix also, ie the "Bearer" part.
-api.setAuthorizationToken('jwt', "CustomToken");
-// This results in the header: "Authorization: CustomToken jwt" being sent with requests.
-```
 
-## Now let's create a DataTransferObject
-
-*UserModel.ts*
-
-```ts
-import {DataTransferObject, dto} from "api-utilities";
-
-@dto(UserModel)
+// Create your DataTransferObject
 export default class UserModel extends DataTransferObject<UserModel> {
 	public id: number;
 	public username: string;
 }
-```
 
-There's a little additional boilerplate, but it will all make sense.
+// Convert your plain js object into a class:
+UserModel.create({username : 'Bruce', id : 1});
 
-Some examples of interacting with a DTO:
-
-```ts
-// Imagine this plain user object:
-const plainUserObject = {username : '...', id : 0};
-
-// We can convert it to our Model/DTO like so:
-UserModel.create(plainUserObject) // returns: UserModel{username: '...', id: 0}
-
-// If we have an array of users:
-UserModel.create([plainUserObject, plainUserObject])// returns [UserModel, UserModel]
-
-// Arrays are detected and automatically converted. All with correct typings.
-```
-
-## Now... let's make an api request:
-
-```ts
-
+// Get a "User" from your api 
 const response = await api.asOne(UserModel).get('/api/user/me');
-// This will return an `ApiResponse` instance.
-// This class has some additional methods to make life a little easier
-// I personally got tired of dealing with try/catches for most regular api errors
-// If you're also familar with laravel, it's validation exceptions are always the same structure
-
-//Get the resulting user model from the response:
-const user = response.get(); // UserModel
-
-// If we had validation errors:
-response.validationError('key')
-response.hasValidationError('key')
-response.hasValidationErrors
-response.validationErrors
-
-//Checking if the api request failed/was successful
-response.isSuccessful
-response.isError
-
-//Getting the underlying original response
-response.data
-
-
-// Making a request for multiple UserModels:
-
-const allUsersResponse = await Api.asMany(UserModel).get('/api/users');
-
-allUsersResponse.get(); // [UserModel, UserModel]
-
+// and convert the response to a UserModel instance.
+const user = response.get();
 ```
 
-### Automatic failed request retries
-
+### We also have "Forms" to make frontend a little more fun.
 ```typescript
-const api = Api.create({
-	baseUrl    : '...',
-	maxRetries : 5, // Specify maxRetries count
-});
+
+const userForm = api.form(UserModel, RequestMethod.PATCH, '/api/user/me');
+userForm.username = 'Setting a new username with type safety! :D';
+
+// Submit the request
+await userForm.submit();
+
+// Some states:
+// userForm.processing
+// userForm.recentlySuccessful
+// userForm.hasError('username');
+
+//.... so much more
 ```
-
-### Error handlers
-
-#### Status code specific:
-
-Imagine if your response status code is a 401, and you want to send the user to /login for example
-
-```typescript
-const api = new Api({baseUrl : '...', maxRetries : 5})
-	.addErrorHandler({
-		shouldThrow : false,
-		statusCode  : 401,
-		handler     : async (error) => {
-			console.log('User is not authenticated')
-			window.location = '/login';
-
-			return true;
-		}
-	});
-```
-
-#### Global
-
-Maybe you need to handle all response errors in a specific way... this will only run for a specific response code if there is not a custom handler specified for
-it.
-
-```typescript
-const api = new Api({baseUrl : '...', maxRetries : 5})
-	.setMainErrorHandler(false, async (error) => {
-		console.log('A error was thrown: ', error)
-		return true;
-	});
-```
-
-### There's also some aliases for these methods which you can use depending on your naming preference:
-
-#### many:
-
-- api.fromMany()
-- api.toMany()
-- api.many()
-
-#### one:
-
-- api.fromOne()
-- api.toOne()
-- api.one()
-
-#### paginated:
-
-- paginated()
-
-#### We can also directly make requests without dtos:
-
-- api.get('/endpoint', {message : 'hi'});
-- api.delete('/endpoint', {message : 'hi'});
-- api.head('/endpoint', {message : 'hi'});
-- api.options('/endpoint', {message : 'hi'});
-- api.post('/endpoint', {message : 'hi'});
-- api.put('/endpoint', {message : 'hi'});
-- api.patch('/endpoint', {message : 'hi'});
-  
-However... be aware, since no DTO's are used, no type completion will be available

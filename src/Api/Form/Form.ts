@@ -1,9 +1,9 @@
 import type {AxiosRequestConfig} from "axios";
 import type {ValidatorOptions} from "class-validator/types/validation/ValidatorOptions";
-import type {DtoProperties, DtoProperty} from "../../api-utils";
 import {ValidationErrors} from "../../Dto";
 import type {DataTransferObject} from "../../Dto";
-import {Validator} from "../../Dto/Validator";
+import {Validator} from "../../Dto";
+import type {DtoProperties, DtoProperty} from "../../index";
 import type {Api} from "../Api";
 import {RequestMethod} from "../RequestMethod";
 import type {ApiResponse} from "../Response/ApiResponse";

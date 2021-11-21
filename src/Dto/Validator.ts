@@ -1,4 +1,4 @@
-import type {DtoProperty} from "../api-utils";
+import type {DtoProperty} from "../index";
 import type {DataTransferObject} from "./DataTransferObject";
 import type {ValidationErrors} from "./ValidationErrors";
 
