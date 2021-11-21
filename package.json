@@ -26,7 +26,7 @@
     "serve-dev": "ts-node-dev src/test/index.ts",
     "test:error-handling": "ts-node-dev src/test/test-custom-error-handling.ts",
     "buildd": "tsc -b --clean && tsc -b && rm -rf dist/test",
-    "prepublish": "tsc -b --clean && tsc -b",
+    "----fprepublish": "tsc -b --clean && tsc -b",
     "build": "microbundle",
     "dev": "microbundle watch"
   },
