@@ -13,8 +13,6 @@ We call the resulting class a "Data Transfer Object".
 
 ## Getting things set-up
 
-SomeMemorableWord
-
 ```
 yarn add api-utilities
 npm install api-utilities

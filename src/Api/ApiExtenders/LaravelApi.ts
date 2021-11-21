@@ -1,5 +1,8 @@
+import type {AxiosRequestConfig} from "axios";
 import type {DataTransferObject} from "../../Dto";
 import {Api, ConfigurationOptions} from "../Api";
+import {Form, FormProxiedDto} from "../Form/Form";
+import {RequestMethod} from "../RequestMethod";
 import {LaravelPaginationResolver} from "../Resolver/Laravel/LaravelPaginationResolver";
 import {ManyResolver} from "../Resolver/ManyResolver";
 import {OneResolver} from "../Resolver/OneResolver";
@@ -25,5 +28,14 @@ export class LaravelApi extends Api {
 
 	public paginated<M extends DataTransferObject<any>>(dto: { new(): M }): LaravelPaginationResolver<M> {
 		return new LaravelPaginationResolver<M>(this._http, dto);
+	}
+
+	public form<M extends DataTransferObject<any>>(
+		dto: (new () => M) | M,
+		method: RequestMethod      = RequestMethod.POST,
+		endpoint: string,
+		config: AxiosRequestConfig = null,
+	): FormProxiedDto<M, LaravelApi, LaravelApiResponse<M, M>> {
+		return new Form<M, LaravelApi, LaravelApiResponse<M, M>>(dto, endpoint, this, LaravelApiResponse, method, config).instance();
 	}
 }

@@ -1,3 +1,22 @@
+# 0.1.0
+
+Remove DataTransferObjectManager & Mapper stuff. It was from an old version of this project, wasn't used/needed.
+
+- Set up some proper documentation, still a WIP but better than the readme: [https://api-utilities.idt.dev](https://api-utilities.idt.dev)
+- Implemented a "Form Request" system to make building front ends and such a little more
+  fluent [https://api-utilities.idt.dev/docs/forms/usage/](https://api-utilities.idt.dev/docs/forms/usage/)
+- Refactored how the validation was handled a little, validation errors are now stored on src/Dto/Validator.ts
+    - src/Api/Form/Form.ts & ApiResponse, both use this class for validation checks and such.
+- Add Axios config property to all methods that pass through to Axios
+- When sending a request, and in the browser, if the dto contains a "File" object(an uploaded file), we'll transition the request data to use FormData. Meaning
+  file upload is also somewhat supported.
+    - Still need to implement uploadProgress handler in a nice way
+- Started to write some tests for the logic
+- Add a hacky but okay ish way to implement custom axios interceptors
+    - api.addRequestSendInterceptor(config => { return config; })
+    - api.addSuccessfulResponseInterceptor(response => { return response; })
+    - api.addFailedResponseInterceptor(error => { return new Error('Throw something else?') })
+
 # 0.0.5
 
 Added a nice way to handle errors which hooks into axios, auto retry handling on failed requests, some additional api response methods and a way to call

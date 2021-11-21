@@ -1,8 +1,10 @@
-import {DataTransferObject, dto} from "../Dto";
+import {IsNumber, IsString} from "class-validator";
+import {DataTransferObject} from "../Dto";
 
-@dto(UserModel)
 export default class UserModel extends DataTransferObject<UserModel> {
+	@IsNumber()
 	public id: number;
+	@IsString()
 	public username: string;
 }
 

@@ -1,4 +1,4 @@
-import type {AxiosResponse} from "axios";
+import type {AxiosRequestConfig, AxiosResponse} from "axios";
 import type {DataTransferObject} from "../../Dto";
 import type {Http} from "../Http";
 import {RequestMethod} from "../RequestMethod";
@@ -15,13 +15,17 @@ export class ApiResponseResolver<T extends DataTransferObject<any>, R> {
 		protected apiResponseResolver: new (dto: new () => T, response: AxiosResponse) => ApiResponse<T, R>
 	) { }
 
+	get resolver(): new (dto: new () => T, response: AxiosResponse) => ApiResponse<T, R> {
+		return this.apiResponseResolver;
+	}
+
 	public throw(shouldThrowOnError: boolean = true): ApiResponseResolver<T, R> {
 		this.throwOnError = shouldThrowOnError;
 
 		return this;
 	}
 
-	public async request(method: RequestMethod, endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
+	public async request(method: RequestMethod, endpoint: string, data: object = {}, config: AxiosRequestConfig = null): Promise<ApiResponse<T, R>> {
 		// if (!this.dto) {
 		// 	throw new Error('You first need to call "toOne(DataTransferObject)" or "toMany(DataTransferObject)" with a dto.');
 		// }
@@ -30,13 +34,13 @@ export class ApiResponseResolver<T extends DataTransferObject<any>, R> {
 
 		try {
 			if (this.type === 'one') {
-				response = await this._http.one(method, endpoint, data);
+				response = await this._http.one(method, endpoint, data, config);
 			}
 			if (this.type === 'many') {
-				response = await this._http.many(method, endpoint, data);
+				response = await this._http.many(method, endpoint, data, config);
 			}
 			if (this.type === 'unknown') {
-				response = await this._http.request(method, endpoint, data);
+				response = await this._http.request(method, endpoint, data, config);
 			}
 		} catch (error) {
 			if (error?.response && !this.throwOnError) {
@@ -49,36 +53,34 @@ export class ApiResponseResolver<T extends DataTransferObject<any>, R> {
 		return new this.apiResponseResolver(this.dto, response);
 	}
 
-	async get(endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
-		return this.request(RequestMethod.GET, endpoint, data);
+	async get(endpoint: string, data: object = {}, config: AxiosRequestConfig = null): Promise<ApiResponse<T, R>> {
+		return this.request(RequestMethod.GET, endpoint, data, config);
 	}
 
-	async post(endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
-		return this.request(RequestMethod.POST, endpoint, data);
+	async post(endpoint: string, data: object = {}, config: AxiosRequestConfig = null): Promise<ApiResponse<T, R>> {
+		return this.request(RequestMethod.POST, endpoint, data, config);
 	}
 
-	async put(endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
-		return this.request(RequestMethod.PUT, endpoint, data);
+	async put(endpoint: string, data: object = {}, config: AxiosRequestConfig = null): Promise<ApiResponse<T, R>> {
+		return this.request(RequestMethod.PUT, endpoint, data, config);
 	}
 
-	async patch(endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
-		return this.request(RequestMethod.PATCH, endpoint, data);
+	async patch(endpoint: string, data: object = {}, config: AxiosRequestConfig = null): Promise<ApiResponse<T, R>> {
+		return this.request(RequestMethod.PATCH, endpoint, data, config);
 	}
 
-	async delete(endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
-		return this.request(RequestMethod.DELETE, endpoint, data);
+	async delete(endpoint: string, data: object = {}, config: AxiosRequestConfig = null): Promise<ApiResponse<T, R>> {
+		return this.request(RequestMethod.DELETE, endpoint, data, config);
 	}
 
-	async head(endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
-		return this.request(RequestMethod.HEAD, endpoint, data);
+	async head(endpoint: string, data: object = {}, config: AxiosRequestConfig = null): Promise<ApiResponse<T, R>> {
+		return this.request(RequestMethod.HEAD, endpoint, data, config);
 	}
 
-	async options(endpoint: string, data: object = {}): Promise<ApiResponse<T, R>> {
-		return this.request(RequestMethod.OPTIONS, endpoint, data);
+	async options(endpoint: string, data: object = {}, config: AxiosRequestConfig = null): Promise<ApiResponse<T, R>> {
+		return this.request(RequestMethod.OPTIONS, endpoint, data, config);
 	}
 
 }
 
-export type RequestOptions = {
-
-}
+export type RequestOptions = {}

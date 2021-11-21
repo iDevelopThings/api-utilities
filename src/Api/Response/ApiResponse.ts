@@ -1,17 +1,23 @@
 import type {AxiosResponse} from "axios";
+import type {DtoProperties, DtoProperty} from "../../api-utils";
+import {Validator} from "../../Dto/Validator";
 import type {DataTransferObject} from "../../Dto";
 
 export class ApiResponse<T extends DataTransferObject<any>, R> {
 
 	protected dto: new () => T;
 	protected response: AxiosResponse;
-	protected _validationErrors: { [key: string]: string } = {};
+	protected _validationErrors: Validator<T> = new Validator();
 
-	constructor(dto: new () => T, response: AxiosResponse = null) {
-		this.dto      = dto;
-		this.response = response;
+	constructor(dto?: new () => T, response: AxiosResponse = null) {
+		if (dto) {
+			this.dto = dto;
+		}
 
-		this.setValidationErrors();
+		if (response) {
+			this.response = response;
+			this.setValidationErrors();
+		}
 	}
 
 	/**
@@ -41,15 +47,6 @@ export class ApiResponse<T extends DataTransferObject<any>, R> {
 	}
 
 	/**
-	 * Will return true if our response code is 422
-	 *
-	 * @returns {boolean}
-	 */
-	get hasValidationErrors(): boolean {
-		return this?.response?.status === 422;
-	}
-
-	/**
 	 * Returns an instance of the model we originally wanted to create
 	 *
 	 * @returns {R}
@@ -62,11 +59,27 @@ export class ApiResponse<T extends DataTransferObject<any>, R> {
 		return (this.dto as any).create(this?.response?.data);
 	}
 
-	private setValidationErrors() {
-		if (this.hasValidationErrors) {
-			for (let dataKey in this?.data?.data) {
-				this._validationErrors[dataKey] = (this?.data?.data[dataKey] || null);
-			}
+	/**
+	 * Did our response return a 422? This is the usual validation error response code.
+	 *
+	 * @returns {boolean}
+	 */
+	get isUnprocessableEntityResponse(): boolean {
+		return this?.response?.status === 422;
+	}
+
+	/**
+	 * Will return true if our response code is 422
+	 *
+	 * @returns {boolean}
+	 */
+	get hasValidationErrors(): boolean {
+		return this.validationErrors().hasErrors();
+	}
+
+	protected setValidationErrors() {
+		if (this.isUnprocessableEntityResponse && this?.data?.data) {
+			this._validationErrors.setValidationErrorsFromResponse(this?.data?.data);
 		}
 	}
 
@@ -74,7 +87,7 @@ export class ApiResponse<T extends DataTransferObject<any>, R> {
 	 * If we have validation errors, we can use this to get all validation errors as key -> value object
 	 * @returns {{[p: string]: string}}
 	 */
-	validationErrors(): { [key: string]: string } {
+	validationErrors(): Validator<T> {
 		return this._validationErrors;
 	}
 
@@ -85,8 +98,15 @@ export class ApiResponse<T extends DataTransferObject<any>, R> {
 	 * @param {E} key
 	 * @returns {string | null}
 	 */
-	validationError<E extends keyof T>(key: E): string | null {
-		return this._validationErrors[key as string] || null;
+	validationError(key: DtoProperty<T>): string | null {
+		return this._validationErrors.get(key);
+	}
+
+	/**
+	 * Reset all of the stored validation errors
+	 */
+	clearValidationErrors() {
+		this._validationErrors.clear();
 	}
 
 	/**
@@ -95,8 +115,8 @@ export class ApiResponse<T extends DataTransferObject<any>, R> {
 	 * @param {E} key
 	 * @returns {boolean}
 	 */
-	hasValidationError<E extends keyof T>(key: E): boolean {
-		return !!this._validationErrors[key as string];
+	hasValidationError(key: DtoProperty<T>): boolean {
+		return this._validationErrors.has(key);
 	}
 
 	get retryCount(): number {

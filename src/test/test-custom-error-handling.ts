@@ -1,11 +1,6 @@
 import "reflect-metadata";
 import {EnvusoApi} from "../Api/ApiExtenders/EnvusoApi";
-
-import {LaravelApi} from "../Api/ApiExtenders/LaravelApi";
-import {DataTransferObjectManager} from "../Dto";
 import UserModel from "./TestingObject";
-
-DataTransferObjectManager.initiate();
 
 const api = EnvusoApi.create({
 	baseUrl    : 'http://mock-api.test',

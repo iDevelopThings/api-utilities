@@ -1,4 +1,7 @@
+import type {AxiosResponse} from "axios";
+import type {AxiosRequestConfig} from "axios";
 import type {DataTransferObject} from "../Dto";
+import {Form, FormProxiedDto} from "./Form/Form";
 import {AddErrorHandler, BrowserConsolePrevention, Http, ResponseErrorHandler} from "./Http";
 import {RequestMethod} from "./RequestMethod";
 import {ManyResolver} from "./Resolver/ManyResolver";
@@ -66,41 +69,40 @@ export class Api {
 		return this.toOne(dto);
 	}
 
-
 	toOne<M extends DataTransferObject<any>>(dto: new () => M): OneResolver<M> {
 		return new OneResolver<M>(this._http, dto, ApiResponse);
 	}
 
-	private unknownRequest<M extends DataTransferObject<any>>(method: RequestMethod, endpoint: string, data: object = {}) {
-		return new UnknownResolver<M>(this._http, null, ApiResponse).request(method, endpoint, data);
+	request<M extends DataTransferObject<any>>(method: RequestMethod, endpoint: string, data: object = {}, config: AxiosRequestConfig = null) {
+		return new UnknownResolver<M>(this._http, null, ApiResponse).request(method, endpoint, data, config);
 	}
 
-	get<M extends DataTransferObject<any>>(endpoint: string, data: object = {}) {
-		return this.unknownRequest(RequestMethod.GET, endpoint, data);
+	get<M extends DataTransferObject<any>>(endpoint: string, data: object = {}, config: AxiosRequestConfig = null) {
+		return this.request(RequestMethod.GET, endpoint, data, config);
 	}
 
-	delete<M extends DataTransferObject<any>>(endpoint: string, data: object = {}) {
-		return this.unknownRequest<M>(RequestMethod.DELETE, endpoint, data);
+	delete<M extends DataTransferObject<any>>(endpoint: string, data: object = {}, config: AxiosRequestConfig = null) {
+		return this.request<M>(RequestMethod.DELETE, endpoint, data, config);
 	}
 
-	head<M extends DataTransferObject<any>>(endpoint: string, data: object = {}) {
-		return this.unknownRequest<M>(RequestMethod.HEAD, endpoint, data);
+	head<M extends DataTransferObject<any>>(endpoint: string, data: object = {}, config: AxiosRequestConfig = null) {
+		return this.request<M>(RequestMethod.HEAD, endpoint, data, config);
 	}
 
-	options<M extends DataTransferObject<any>>(endpoint: string, data: object = {}) {
-		return this.unknownRequest<M>(RequestMethod.OPTIONS, endpoint, data);
+	options<M extends DataTransferObject<any>>(endpoint: string, data: object = {}, config: AxiosRequestConfig = null) {
+		return this.request<M>(RequestMethod.OPTIONS, endpoint, data, config);
 	}
 
-	post<M extends DataTransferObject<any>>(endpoint: string, data: object = {}) {
-		return this.unknownRequest<M>(RequestMethod.POST, endpoint, data);
+	post<M extends DataTransferObject<any>>(endpoint: string, data: object = {}, config: AxiosRequestConfig = null) {
+		return this.request<M>(RequestMethod.POST, endpoint, data, config);
 	}
 
-	put<M extends DataTransferObject<any>>(endpoint: string, data: object = {}) {
-		return this.unknownRequest<M>(RequestMethod.PUT, endpoint, data);
+	put<M extends DataTransferObject<any>>(endpoint: string, data: object = {}, config: AxiosRequestConfig = null) {
+		return this.request<M>(RequestMethod.PUT, endpoint, data, config);
 	}
 
-	patch<M extends DataTransferObject<any>>(endpoint: string, data: object = {}) {
-		return this.unknownRequest<M>(RequestMethod.PATCH, endpoint, data);
+	patch<M extends DataTransferObject<any>>(endpoint: string, data: object = {}, config: AxiosRequestConfig = null) {
+		return this.request<M>(RequestMethod.PATCH, endpoint, data, config);
 	}
 
 	public setMainErrorHandler(shouldThrow: boolean, handler: ResponseErrorHandler): this {
@@ -114,6 +116,34 @@ export class Api {
 
 		return this;
 	}
+
+	public form<M extends DataTransferObject<any>>(
+		dto: (new () => M) | M,
+		method: RequestMethod      = RequestMethod.POST,
+		endpoint: string,
+		config: AxiosRequestConfig = null,
+	): FormProxiedDto<M, Api, ApiResponse<M, M>> {
+		return new Form<M, Api, ApiResponse<M, M>>(dto, endpoint, this, ApiResponse, method, config).instance();
+	}
+
+	public addRequestSendInterceptor(interceptor: (config: AxiosRequestConfig) => AxiosRequestConfig) {
+		this._http.addRequestSendInterceptor(interceptor);
+
+		return this;
+	}
+
+	public addSuccessfulResponseInterceptor(interceptor: (response: AxiosResponse) => AxiosResponse) {
+		this._http.addSuccessfulResponseInterceptor(interceptor);
+
+		return this;
+	}
+
+	public addFailedResponseInterceptor(interceptor: (error) => Promise<any>) {
+		this._http.addFailedResponseInterceptor(interceptor);
+
+		return this;
+	}
+
 }
 
 export type ConfigurationOptions = {

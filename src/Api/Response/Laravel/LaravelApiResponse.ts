@@ -12,4 +12,11 @@ export class LaravelApiResponse<T extends DataTransferObject<any>, R> extends Ap
 		return (this.dto as any).create(this.response.data);
 	}
 
+	protected setValidationErrors() {
+		if (!this.isUnprocessableEntityResponse || !this?.data?.errors) {
+			return;
+		}
+
+		this._validationErrors.setValidationErrorsFromResponse(this?.data?.errors || {});
+	}
 }

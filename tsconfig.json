@@ -2,17 +2,18 @@
   "compilerOptions": {
     "moduleResolution": "node",
     "lib": [
-      "es2020",
+      "ESNext",
       "DOM"
     ],
     "module": "commonjs",
     "outDir": "./dist",
-    "target": "es2020",
+    "target": "ESNext",
     "importsNotUsedAsValues": "error",
     "isolatedModules": true,
     "resolveJsonModule": true,
     "sourceMap": true,
     "esModuleInterop": true,
+    "importHelpers": true,
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "strict": false,
@@ -27,5 +28,9 @@
   },
   "include": [
     "src/**/*.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
   ]
 }

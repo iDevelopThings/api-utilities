@@ -1,5 +1,6 @@
-import axios, {AxiosError, AxiosInstance, AxiosResponse, Method} from "axios";
+import axios, {AxiosError, AxiosInstance, AxiosInterceptorManager, AxiosRequestConfig, AxiosResponse, Method} from "axios";
 import isRetryAllowed from "../Utility/IsRetryAllowed";
+import {FormUtility} from "./Form/FormUtility";
 
 /**
  * Implemented some of the logic from axios-retry package. So retry logic deserves some credits
@@ -25,6 +26,40 @@ export class Http {
 	private _errorHandlers: Map<string, ResponseErrorHandlingInfo> = new Map();
 
 	private _axiosInstance: AxiosInstance = null;
+
+	/**
+	 * Uses:
+	 * interceptors.request.use
+	 */
+	private _axiosRequestSendInterceptors: ((config: AxiosRequestConfig) => AxiosRequestConfig)[] = [];
+	/**
+	 * Uses:
+	 * interceptors.response.use(req => THIS ONE, undefined);
+	 */
+	private _axiosSuccessfulResponseInterceptors: ((response: AxiosResponse) => AxiosResponse)[]  = [];
+	/**
+	 * Uses:
+	 * interceptors.response.use(undefined, req => THIS ONE);
+	 */
+	private _axiosFailedResponseInterceptors: ((error) => Promise<any>)[]                         = [];
+
+	public addRequestSendInterceptor(interceptor: (config: AxiosRequestConfig) => AxiosRequestConfig) {
+		this._axiosRequestSendInterceptors.push(interceptor);
+
+		return this;
+	}
+
+	public addSuccessfulResponseInterceptor(interceptor: (response: AxiosResponse) => AxiosResponse) {
+		this._axiosSuccessfulResponseInterceptors.push(interceptor);
+
+		return this;
+	}
+
+	public addFailedResponseInterceptor(interceptor: (error) => Promise<any>) {
+		this._axiosFailedResponseInterceptors.push(interceptor);
+
+		return this;
+	}
 
 	public setBaseUrl(url: string) {
 		this._baseUrl = url;
@@ -90,6 +125,7 @@ export class Http {
 		return this._baseUrl;
 	}
 
+
 	private _instance() {
 		if (this._axiosInstance) {
 			return this._axiosInstance;
@@ -110,21 +146,50 @@ export class Http {
 			// after initialization, the instance is already created. We can't modify it's config.
 			config.headers = this._headers;
 
+			// Run custom axios interceptors
+			for (let interceptor of this._axiosRequestSendInterceptors) {
+				try {
+					config = interceptor(config);
+				} catch (error) {
+					console.error(error);
+				}
+			}
+
 			return config;
 		});
 
 		this._axiosInstance.interceptors.response.use(
-			(res) => res,
+			(res) => {
+				// Run custom axios interceptors
+				for (let interceptor of this._axiosSuccessfulResponseInterceptors) {
+					try {
+						res = interceptor(res);
+					} catch (error) {
+						console.error(error);
+					}
+				}
+
+				return res;
+			},
 			async (error) => {
 
 				if (error?.config && this.shouldDoRetries()) {
 					return await this.handleRequestRetry(error, error.config);
 				}
 
-				const handleResult = await this.handleResponseError((error as AxiosError));
+				let handleResult = await this.handleResponseError((error as AxiosError));
 
 				if (handleResult === true) {
 					return this.isAxiosError(error) ? error.response : null;
+				}
+
+				// Run custom axios interceptors
+				for (let interceptor of this._axiosFailedResponseInterceptors) {
+					try {
+						handleResult = await interceptor(handleResult);
+					} catch (error) {
+						console.error(error);
+					}
 				}
 
 				return handleResult;
@@ -134,58 +199,61 @@ export class Http {
 		return this._axiosInstance;
 	}
 
-	public async request<T extends any | any[]>(method: Method, endpoint: string, params: object = {}): Promise<AxiosResponse<T>> {
+	public async request<T extends any | any[]>(method: Method, endpoint: string, params: object = {}, config: AxiosRequestConfig = null): Promise<AxiosResponse<T>> {
 		this.canRunRequest();
 
 		let dataProp = 'data';
-		if (['GET', 'DELETE'].includes(method.toUpperCase())) {
+		let hasFiles = false;
+
+		const sendDataAsQueryParams = ['GET', 'DELETE'].includes(method.toUpperCase());
+
+		if (sendDataAsQueryParams) {
 			dataProp = 'params';
 		}
 
-		/*try {*/
+		if (typeof window !== 'undefined' && !sendDataAsQueryParams) {
+			hasFiles = FormUtility.hasFiles(params);
+
+			if (hasFiles) {
+				params = FormUtility.objectToFormData(params);
+				//TODO: Implement uploadProgress handling
+			}
+		}
+
 		return this._instance().request<T>({
+			...(config || {}),
 			method,
 			url        : endpoint,
 			[dataProp] : params
 		});
-		/*} catch (error) {
-		 // Let's try to handle the error as an axios thrown error first
-		 if (await this.handleResponseError((error as AxiosError))) {
-		 return this.isAxiosError(error) ? error.response : null;
-		 }
-
-		 // Just in-case we don't hit the above handling, we'll throw the error
-		 // We don't want any silent rogue errors.
-		 throw error;
-		 }*/
 	}
 
-	public async many<T extends any[]>(method: Method, endpoint: string, params: object = {}): Promise<AxiosResponse<T>> {
-		return this.request<T>(method, endpoint, params);
+	public async many<T extends any[]>(method: Method, endpoint: string, params: object = {}, config: AxiosRequestConfig = null): Promise<AxiosResponse<T>> {
+		return this.request<T>(method, endpoint, params, config);
 	}
 
-	public async one<T extends any>(method: Method, endpoint: string, params: object = {}): Promise<AxiosResponse<T>> {
-		return this.request<T>(method, endpoint, params);
+	public async one<T extends any>(method: Method, endpoint: string, params: object = {}, config: AxiosRequestConfig = null): Promise<AxiosResponse<T>> {
+		return this.request<T>(method, endpoint, params, config);
 	}
 
-	public get<T>(endpoint: string, params: object = {}): Promise<any> {
-		return this.request<T>('get', endpoint, {params : params});
+	public get<T>(endpoint: string, params: object = {}, config: AxiosRequestConfig = null): Promise<any> {
+		return this.request<T>('get', endpoint, {params : params}, config);
 	}
 
-	public put<T>(endpoint: string, params: object = {}): Promise<any> {
-		return this.request<T>('put', endpoint, params);
+	public put<T>(endpoint: string, params: object = {}, config: AxiosRequestConfig = null): Promise<any> {
+		return this.request<T>('put', endpoint, params, config);
 	}
 
-	public patch<T>(endpoint: string, params: object = {}): Promise<any> {
-		return this.request<T>('patch', endpoint, params);
+	public patch<T>(endpoint: string, params: object = {}, config: AxiosRequestConfig = null): Promise<any> {
+		return this.request<T>('patch', endpoint, params, config);
 	}
 
-	public post<T>(endpoint: string, params: object = {}): Promise<any> {
-		return this.request<T>('post', endpoint, params);
+	public post<T>(endpoint: string, params: object = {}, config: AxiosRequestConfig = null): Promise<any> {
+		return this.request<T>('post', endpoint, params, config);
 	}
 
-	public delete<T>(endpoint: string, params: object = {}): Promise<any> {
-		return this.request<T>('delete', endpoint, {params : params});
+	public delete<T>(endpoint: string, params: object = {}, config: AxiosRequestConfig = null): Promise<any> {
+		return this.request<T>('delete', endpoint, {params : params}, config);
 	}
 
 	private canRunRequest() {
@@ -414,4 +482,27 @@ export type AddErrorHandler = {
 	statusCode: number,
 	handler: ResponseErrorHandler,
 	shouldThrow: boolean
+}
+
+export type AxiosInterceptorRegistrationTypes = {
+	requestSend?: { handler: (config: AxiosRequestConfig) => AxiosRequestConfig },
+	successfulResponse?: { handler: (response: AxiosResponse) => AxiosResponse },
+	failedResponse?: { handler: (error) => Promise<any> },
+}
+export type AxiosInterceptorRegistrations = {
+	/**
+	 * Uses:
+	 * interceptors.request.use
+	 */
+	requestSend?: AxiosInterceptorRegistrationTypes['requestSend'][],
+	/**
+	 * Uses:
+	 * interceptors.response.use(req => THIS ONE, undefined);
+	 */
+	successfulResponse?: AxiosInterceptorRegistrationTypes['successfulResponse'][],
+	/**
+	 * Uses:
+	 * interceptors.response.use(undefined, req => THIS ONE);
+	 */
+	failedResponse?: AxiosInterceptorRegistrationTypes['failedResponse'][],
 }
