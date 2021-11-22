@@ -74,7 +74,7 @@ export class ApiResponse<T extends DataTransferObject<any>, R> {
 	 * @returns {boolean}
 	 */
 	get hasValidationErrors(): boolean {
-		return this.validationErrors().hasErrors();
+		return this.validationErrorStore().hasErrors();
 	}
 
 	protected setValidationErrors() {
@@ -87,7 +87,16 @@ export class ApiResponse<T extends DataTransferObject<any>, R> {
 	 * If we have validation errors, we can use this to get all validation errors as key -> value object
 	 * @returns {{[p: string]: string}}
 	 */
-	validationErrors(): Validator<T> {
+	get validationErrors() {
+		return this.validationErrorStore().all();
+	}
+
+	/**
+	 * Get the validation error store handler instance
+	 *
+	 * @returns {Validator<T>}
+	 */
+	validationErrorStore(): Validator<T> {
 		return this._validationErrors;
 	}
 

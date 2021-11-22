@@ -136,7 +136,32 @@ export class Form<D extends DataTransferObject<any>, A extends Api, R extends Ap
 		this._processing                = false;
 		this._wasSuccessful             = false;
 		this._recentlySuccessfulTimeout = null;
-		this._processing                = false;
+	}
+
+	/**
+	 * Handle some data transformation without directly
+	 * using `form.username` for example
+	 *
+	 * @param {(dto: D) => D} transformer
+	 * @returns {this}
+	 */
+	public transform(transformer : (dto : D) => D): this {
+		return this.set(transformer(this._proxiedDto));
+	}
+
+	/**
+	 * Set a dto instance which is being used for the form.
+	 *
+	 * Could be useful if you create a form from a class instance
+	 * then you want to provide some dto obtained via api request or something.
+	 *
+	 * @param {D} dto
+	 * @returns {this}
+	 */
+	public set(dto: D): this {
+		this._proxiedDto = dto;
+
+		return this;
 	}
 
 	/**
@@ -147,7 +172,7 @@ export class Form<D extends DataTransferObject<any>, A extends Api, R extends Ap
 	 */
 	public async submit(config: AxiosRequestConfig = null) {
 		if (this._processing) {
-			return;
+			return false;
 		}
 
 		this.resetSubmitValues();
@@ -170,7 +195,7 @@ export class Form<D extends DataTransferObject<any>, A extends Api, R extends Ap
 
 			if (this._response.hasValidationErrors) {
 				this._validationErrors.setValidationErrorsFromResponse(
-					this._response.validationErrors().all(), false
+					this._response.validationErrorStore().all(), false
 				);
 			}
 

@@ -1,3 +1,14 @@
+# 0.1.5
+
+- Change to "microbundle" for creating the dist, fixed a lot of issues in different environments
+- Updated Form
+  - transform() method added 
+  - set() method added
+  - Read about these on the docs: [https://api-utilities.idt.dev/docs/forms/usage/](https://api-utilities.idt.dev/docs/forms/usage/)
+- Updated DataTransferObject
+  - Changed name of static bool to enable validation by default... naming wasn't very obvious what it does
+  - From ``useDtoValidation`` to ``validateOnCreate
+
 # 0.1.0
 
 Remove DataTransferObjectManager & Mapper stuff. It was from an old version of this project, wasn't used/needed.

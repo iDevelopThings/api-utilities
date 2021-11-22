@@ -6,7 +6,7 @@ import {ValidationErrors} from "./ValidationErrors";
 
 export class DataTransferObject<T> /*implements DataTransferObjectContract<T>*/ {
 
-	public static useDtoValidation: boolean = false;
+	public static validateOnCreate: boolean = false;
 
 	public static create<M extends DataTransferObject<any>, Value = object | object[]>(
 		this: new () => M,
@@ -16,7 +16,7 @@ export class DataTransferObject<T> /*implements DataTransferObjectContract<T>*/ 
 
 		const dto = plainToInstance<M, Value>(this, data) as (Value extends object[] ? M[] : M);
 
-		if (DataTransferObject.useDtoValidation && validate) {
+		if (DataTransferObject.validateOnCreate && validate) {
 			if (Array.isArray(dto)) {
 				dto.forEach((d) => d.validate());
 			} else {
