@@ -14,10 +14,11 @@
   "description": "Make api requests and convert them to Data Transfer Objects(classes) on the fly. Along with helpers to help with handling errors.",
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
-  "module": "./dist/index.js",
+  "module": "./dist/index.module.js",
+  "type": "module",
   "scripts": {
-    "serve-dev": "ts-node-dev src/test/index.ts",
-    "test:error-handling": "ts-node-dev src/test/test-custom-error-handling.ts",
+    "serve-dev": "ts-node-dev test-build/index.ts",
+    "test:error-handling": "ts-node-dev test-build/test-custom-error-handling.ts",
     "buildd": "tsc -b --clean && tsc -b && rm -rf dist/test",
     "----fprepublish": "tsc -b --clean && tsc -b",
     "build-tsup": "tsup",
@@ -25,6 +26,12 @@
     "dev": "microbundle watch"
   },
   "devDependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/plugin-proposal-decorators": "^7.16.4",
+    "@babel/plugin-transform-typescript": "^7.16.1",
+    "@babel/preset-env": "^7.16.4",
+    "@babel/preset-typescript": "^7.16.0",
     "@types/jest": "^27.0.3",
     "jest": "^27.3.1",
     "microbundle": "^0.14.2",
