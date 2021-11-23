@@ -8,7 +8,7 @@
     ],
     "module": "ESNext",
     "outDir": "./dist/web",
-    "target": "ES5",
+    "target": "ES6",
     "emitDeclarationOnly": false,
     "declaration": false
   }
