@@ -20,7 +20,6 @@
     "test:error-handling": "ts-node-dev src/test/test-custom-error-handling.ts",
     "buildd": "tsc -b --clean && tsc -b && rm -rf dist/test",
     "----fprepublish": "tsc -b --clean && tsc -b",
-    "prepublishOnly": "microbundle && npm version patch",
     "build-tsup": "tsup",
     "build": "microbundle",
     "dev": "microbundle watch"
