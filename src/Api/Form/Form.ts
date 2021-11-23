@@ -12,6 +12,9 @@ export type FormProxiedDto<D extends DataTransferObject<any>,
 	A extends Api,
 	R extends ApiResponse<D, D>> = Form<D, A, R> & Omit<D, 'validate' | 'instance'>;
 
+//export type DtoPropertyKeys<D> = DtoProperties<D>
+//export type ValidationErrorsObject<D> = { [K in DtoProperties<D>]: string };
+
 export class Form<D extends DataTransferObject<any>, A extends Api, R extends ApiResponse<D, D>> {
 
 	/**
@@ -145,7 +148,7 @@ export class Form<D extends DataTransferObject<any>, A extends Api, R extends Ap
 	 * @param {(dto: D) => D} transformer
 	 * @returns {this}
 	 */
-	public transform(transformer : (dto : D) => D): this {
+	public transform(transformer: (dto: D) => D): this {
 		return this.set(transformer(this._proxiedDto));
 	}
 
@@ -180,9 +183,11 @@ export class Form<D extends DataTransferObject<any>, A extends Api, R extends Ap
 		this._processing = true;
 
 		try {
+			const axiosConfig = {...(this._axiosRequestConfig || {}), ...(config || {})};
+
 			this._response = await this._api
 				.one((this._proxiedDto.constructor as any))
-				.request(this._method, this._endpoint, this._proxiedDto, {...(this._axiosRequestConfig || {}), ...(config || {})}) as unknown as R;
+				.request(this._method, this._endpoint, this._proxiedDto, axiosConfig) as unknown as R;
 
 			if (this._response.isSuccessful) {
 				this._wasSuccessful             = true;
@@ -242,9 +247,9 @@ export class Form<D extends DataTransferObject<any>, A extends Api, R extends Ap
 	/**
 	 * Get a key -> value object of validation errors
 	 *
-	 * @returns {{[K in DtoProperties<D> as string | symbol | number]: string}}
+	 * @returns {ValidationErrorsObject<D>>}
 	 */
-	public errors(): { [K in DtoProperties<D> as string | symbol | number]: string } {
+	public errors(): { [key: string]: string } {
 		return this._validationErrors.all();
 	}
 
