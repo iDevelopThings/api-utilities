@@ -12,10 +12,9 @@
   },
   "license": "MIT",
   "description": "Make api requests and convert them to Data Transfer Objects(classes) on the fly. Along with helpers to help with handling errors.",
-  "typings": "./dist/index.d.ts",
-  "main": "./dist/api-utilities.cjs.production.min.js",
-  "module": "./dist/api-utilities.esm.js",
-  "type": "module",
+  "typings": "./dist/types/index.d.ts",
+  "main": "./dist/node/index.js",
+  "module": "./dist/web/index.js",
   "files": [
     "dist"
   ],

@@ -6,7 +6,7 @@
       "DOM"
     ],
     "module": "ESNext",
-    "outDir": "./dist",
+    "outDir": "./dist/web",
     "target": "ESNext",
     "importsNotUsedAsValues": "error",
     "isolatedModules": true,
@@ -24,7 +24,7 @@
     "typeRoots": [
       "node_modules/@types"
     ],
-    "declaration": true
+    "declaration": false
   },
   "include": [
     "src/**/*.ts"

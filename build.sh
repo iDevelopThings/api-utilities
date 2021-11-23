@@ -1,11 +1,31 @@
-#./node_modules/.bin/babel src --out-dir babel-dist --out-file babel-dist/index.js --extensions ".ts" --delete-dir-on-start
-
 rm -rf dist
+rm -rf dist-web
+rm -rf dist-node
 
-#./node_modules/.bin/tsup
-#
-#./node_modules/.bin/babel src --out-file dist/index.module.js --extensions ".ts"
+echo ">> Building node version"
 
-#./node_modules/.bin/tsdx build --entry src/index.ts --target node --tsconfig ./tsconfig.node.json
-./node_modules/.bin/tsdx build --entry src/index.ts --target web --tsconfig ./tsconfig.web.json
+./node_modules/.bin/tsdx build --tsconfig tsconfig.node.json --target node
 
+mv dist/ dist-node/
+
+echo ">> Building web version"
+
+./node_modules/.bin/tsdx build --tsconfig tsconfig.json --target web
+
+mv dist/ dist-web/
+
+echo ">> Generating types"
+
+./node_modules/.bin/tsc --build tsconfig.declarations.json
+
+echo ">> Restructuring files..."
+
+mkdir dist
+
+mv dist-web/ dist/web/
+mv dist-node/ dist/node/
+mv dist-types/ dist/types/
+
+
+
+echo ">> All done."

@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "module": "ES2015",
+    "outDir": "./dist-node",
+    "target": "ESNext",
+    "emitDeclarationOnly": false,
+    "declaration": false
+  }
+}
