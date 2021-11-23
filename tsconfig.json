@@ -1,13 +1,5 @@
 {
   "compilerOptions": {
-    "moduleResolution": "node",
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
-    "module": "ESNext",
-    "outDir": "./dist/web",
-    "target": "ESNext",
     "importsNotUsedAsValues": "error",
     "isolatedModules": true,
     "resolveJsonModule": true,
@@ -24,7 +16,8 @@
     "typeRoots": [
       "node_modules/@types"
     ],
-    "declaration": false
+    "declaration": false,
+    "emitDeclarationOnly": false
   },
   "include": [
     "src/**/*.ts"

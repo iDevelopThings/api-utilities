@@ -6,9 +6,9 @@
       "ESNext",
       "DOM"
     ],
-    "module": "CommonJS",
-    "outDir": "./dist/node",
-    "target": "ESNext",
+    "module": "ESNext",
+    "outDir": "./dist/web",
+    "target": "ES5",
     "emitDeclarationOnly": false,
     "declaration": false
   }

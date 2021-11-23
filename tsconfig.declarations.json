@@ -1,9 +1,16 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "declarationDir": "./dist-types",
+    "moduleResolution": "node",
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "module": "CommonJS",
+    "outDir": "./dist/types",
+    "target": "ESNext",
+    "declarationDir": "./dist/types",
     "declaration": true,
-    "emitDeclarationOnly": true,
-    "outDir": "./dist-types"
+    "emitDeclarationOnly": true
   }
 }
