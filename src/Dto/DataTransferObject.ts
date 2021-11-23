@@ -2,6 +2,7 @@ import {plainToInstance} from "class-transformer";
 import {validateSync} from 'class-validator';
 import type {ValidatorOptions} from "class-validator/types/validation/ValidatorOptions";
 import type {DtoProperty, Magic} from "../index";
+import {DtoUtilities} from "./DtoUtilities";
 import {ValidationErrors} from "./ValidationErrors";
 
 export class DataTransferObject<T> /*implements DataTransferObjectContract<T>*/ {
@@ -47,39 +48,6 @@ export class DataTransferObject<T> /*implements DataTransferObjectContract<T>*/ 
 		}
 
 		return validationErrors.length === 0;
-	}
-
-	/**
-	 * Get the property keys defined on this dto
-	 *
-	 * @returns {DtoProperty<T>[]}
-	 */
-	public getProperties(): DtoProperty<T>[] {
-		return Object.getOwnPropertyNames(this) as DtoProperty<T>[];
-	}
-
-	/**
-	 * Get the default dto values
-	 *
-	 * @returns {Magic<T>}
-	 */
-	public getDefaultValues(): Magic<T> {
-		const properties = this.getProperties();
-		const newClass   = new ((this as any).constructor)();
-
-		const newDefaults: any = {};
-
-		for (let property of properties) {
-			const value = newClass[property];
-
-			if (typeof value === "function") {
-				continue;
-			}
-
-			newDefaults[property] = value;
-		}
-
-		return newDefaults;
 	}
 
 }

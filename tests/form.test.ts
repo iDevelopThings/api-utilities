@@ -1,20 +1,13 @@
-import {IsBoolean, IsString, MinLength} from "class-validator";
-import {Api, ApiResponse, DataTransferObject, RequestMethod} from "../src";
+import {Api, ApiResponse, RequestMethod} from "../src";
 import {EnvusoApi} from "../src/Api/ApiExtenders/EnvusoApi";
 import {LaravelApi} from "../src/Api/ApiExtenders/LaravelApi";
 import {Form} from "../src/Api/Form/Form";
 import {EnvusoApiResponse} from "../src/Api/Response/Envuso/EnvusoApiResponse";
 import {LaravelApiResponse} from "../src/Api/Response/Laravel/LaravelApiResponse";
+import {UserDto} from "./UserDto";
 
 describe('form', () => {
-	class UserDto extends DataTransferObject<UserDto> {
-		@IsString()
-		@MinLength(2)
-		username: string;
 
-		@IsBoolean()
-		anotherProperty?: boolean = false;
-	}
 
 	const apiConfig  = {baseUrl : 'http://mock-api.test'};
 	const api        = Api.create(apiConfig);
@@ -28,6 +21,15 @@ describe('form', () => {
 
 		expect(form.username).toBeDefined();
 		expect(form.username).toEqual('yeet');
+	});
+
+	test('get dto properties via form', () => {
+
+		const form    = api.form(UserDto, RequestMethod.GET, '/wat');
+		form.username = 'yeet';
+
+		const props = form.getProperties();
+		expect(form.getProperties()).toContain('username');
 	});
 
 	test('initiating with existing instance of dto', () => {

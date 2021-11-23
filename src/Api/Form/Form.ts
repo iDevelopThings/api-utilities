@@ -3,7 +3,8 @@ import type {ValidatorOptions} from "class-validator/types/validation/ValidatorO
 import {ValidationErrors} from "../../Dto";
 import type {DataTransferObject} from "../../Dto";
 import {Validator} from "../../Dto";
-import type {DtoProperties, DtoProperty} from "../../index";
+import {DtoUtilities} from "../../Dto/DtoUtilities";
+import type {DtoProperty, Magic} from "../../index";
 import type {Api} from "../Api";
 import {RequestMethod} from "../RequestMethod";
 import type {ApiResponse} from "../Response/ApiResponse";
@@ -90,7 +91,7 @@ export class Form<D extends DataTransferObject<any>, A extends Api, R extends Ap
 
 		if (dto) {
 			this._proxiedDto       = typeof dto === 'function' ? new dto() : dto;
-			this._defaultDtoValues = this._proxiedDto.getDefaultValues();
+			this._defaultDtoValues = DtoUtilities.getDefaultValues(this._proxiedDto);
 		}
 		if (endpoint) {
 			this._endpoint = endpoint;
@@ -319,6 +320,24 @@ export class Form<D extends DataTransferObject<any>, A extends Api, R extends Ap
 		}
 
 		return this._response.get();
+	}
+
+	/**
+	 * Get the property keys defined on the dto
+	 *
+	 * @returns {DtoProperty<D>[]}
+	 */
+	public getProperties(): DtoProperty<D>[] {
+		return DtoUtilities.getProperties(this._proxiedDto) as unknown as DtoProperty<D>[];
+	}
+
+	/**
+	 * Get the default dto values
+	 *
+	 * @returns {Magic<D>}
+	 */
+	public getDefaultValues(): Magic<D> {
+		return DtoUtilities.getDefaultValues(this._proxiedDto) as unknown as Magic<D>;
 	}
 
 	/**
