@@ -6,6 +6,56 @@ export class Validator<D extends DataTransferObject<any>> {
 
 	private _errors: Map<keyof D, string> = new Map();
 
+	private static _inputClasses = {
+		default : '',
+	};
+
+	/**
+	 * Set the css classes you will use on inputs
+	 *
+	 * You can specify a "group" if you need different classes for different situations/solutions
+	 *
+	 * @param {string} classes
+	 * @param {string} group
+	 */
+	public static setInputClasses(classes: string, group: string = 'default') {
+		if (!group) {
+			group = 'default';
+		}
+		this._inputClasses[group] = classes;
+	}
+
+	/**
+	 * If the specified field has an error, it will return the input
+	 * classes you specified + defaultClasses, otherwise just defaultClasses
+	 *
+	 * @see setInputClasses
+	 * @param {DtoProperty<D>} field
+	 * @param {string} defaultClasses
+	 * @param {string} group
+	 * @returns {string}
+	 */
+	public mergeClasses<K extends keyof D>(field: DtoProperty<D>, defaultClasses: string, group: string = 'default') {
+		return this.classes(field, group) + ' ' + defaultClasses;
+	}
+
+	/**
+	 * If the specified field has an error, it will return the input
+	 * classes you specified, otherwise an empty string
+	 *
+	 * @see setInputClasses
+	 * @param {DtoProperty<D>} field
+	 * @param {string} group
+	 * @returns {any}
+	 */
+	public classes<K extends keyof D>(field: DtoProperty<D>, group: string = 'default') {
+		if (this.has(field)) {
+			return Validator._inputClasses[group];
+		}
+
+		return '';
+	}
+
 	/**
 	 * Clear all errors in the store
 	 */
