@@ -15,7 +15,9 @@ export class DataTransferObject<T> /*implements DataTransferObjectContract<T>*/ 
 		validate: boolean = true
 	): (Value extends object[] ? M[] : M) {
 
-		const dto = plainToInstance<M, Value>(this, data) as (Value extends object[] ? M[] : M);
+		const dto = plainToInstance<M, Value>(this, data, {
+			enableImplicitConversion : true,
+		}) as (Value extends object[] ? M[] : M);
 
 		if (DataTransferObject.validateOnCreate && validate) {
 			if (Array.isArray(dto)) {
