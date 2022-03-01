@@ -35,7 +35,7 @@ export class Validator<D extends DataTransferObject<any>> {
 	 * @param {string} group
 	 * @returns {string}
 	 */
-	public mergeClasses<K extends keyof D>(field: DtoProperty<D>, defaultClasses: string, group: string = 'default') {
+	public mergeClasses<K extends keyof D>(field: DtoProperty<D> | string, defaultClasses: string, group: string = 'default') {
 		return this.classes(field, group) + ' ' + defaultClasses;
 	}
 
@@ -48,7 +48,7 @@ export class Validator<D extends DataTransferObject<any>> {
 	 * @param {string} group
 	 * @returns {any}
 	 */
-	public classes<K extends keyof D>(field: DtoProperty<D>, group: string = 'default') {
+	public classes<K extends keyof D>(field: DtoProperty<D> | string, group: string = 'default') {
 		if (this.has(field)) {
 			return Validator._inputClasses[group];
 		}
@@ -87,8 +87,8 @@ export class Validator<D extends DataTransferObject<any>> {
 	 * @param {DtoProperty<D>} key
 	 * @returns {string|null}
 	 */
-	public get<K extends keyof D>(key: DtoProperty<D>): string | null {
-		return this._errors.get(key) || null;
+	public get<K extends keyof D>(key: DtoProperty<D> | string): string | null {
+		return this._errors.get(key as DtoProperty<D>) || null;
 	}
 
 	/**
@@ -97,8 +97,8 @@ export class Validator<D extends DataTransferObject<any>> {
 	 * @param {DtoProperty<D>} key
 	 * @returns {boolean}
 	 */
-	public has<K extends keyof D>(key: DtoProperty<D>): boolean {
-		return this._errors.has(key);
+	public has<K extends keyof D>(key: DtoProperty<D> | string): boolean {
+		return this._errors.has(key as DtoProperty<D>);
 	}
 
 	private setFromKeyValObject(errors: { [key: string]: string }, clearStore: boolean = true) {

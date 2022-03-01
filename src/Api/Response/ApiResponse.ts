@@ -56,7 +56,11 @@ export class ApiResponse<T extends DataTransferObject<any>, R> {
 			return this?.response?.data as R;
 		}
 
-		return (this.dto as any).create(this?.response?.data);
+		const dto = (this.dto as any).create(this?.response?.data);
+
+		dto.validator = this._validationErrors;
+
+		return dto;
 	}
 
 	/**

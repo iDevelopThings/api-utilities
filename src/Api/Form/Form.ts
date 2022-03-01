@@ -255,12 +255,39 @@ export class Form<D extends DataTransferObject<any>, A extends Api, R extends Ap
 	}
 
 	/**
+	 * If the specified field has an error, it will return the input
+	 * classes you specified + defaultClasses, otherwise just defaultClasses
+	 *
+	 * @see setInputClasses
+	 * @param {DtoProperty<D>} field
+	 * @param {string} defaultClasses
+	 * @param {string} group
+	 * @returns {string}
+	 */
+	public mergeClasses<K extends keyof D>(field: DtoProperty<D>, defaultClasses: string, group: string = 'default') {
+		return this._validationErrors.mergeClasses(field, defaultClasses, group);
+	}
+
+	/**
+	 * If the specified field has an error, it will return the input
+	 * classes you specified, otherwise an empty string
+	 *
+	 * @see setInputClasses
+	 * @param {DtoProperty<D>} field
+	 * @param {string} group
+	 * @returns {any}
+	 */
+	public classes<K extends keyof D>(field: DtoProperty<D> | string, group: string = 'default') {
+		return this._validationErrors.classes(field, group);
+	}
+
+	/**
 	 * Do we have a validation error for the DTO property specified?
 	 *
 	 * @param {DtoProperty<D>} key
 	 * @returns {boolean}
 	 */
-	public hasError(key: DtoProperty<D>): boolean {
+	public hasError(key: DtoProperty<D> | string): boolean {
 		return this._validationErrors.has(key);
 	}
 
@@ -270,7 +297,7 @@ export class Form<D extends DataTransferObject<any>, A extends Api, R extends Ap
 	 * @param {DtoProperty<D>} key
 	 * @returns {string}
 	 */
-	public error(key: DtoProperty<D>): string | null {
+	public error(key: DtoProperty<D> | string): string | null {
 		return this._validationErrors.get(key);
 	}
 

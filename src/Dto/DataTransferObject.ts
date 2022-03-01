@@ -1,11 +1,12 @@
 import {plainToInstance} from "class-transformer";
 import {validateSync} from 'class-validator';
 import type {ValidatorOptions} from "class-validator/types/validation/ValidatorOptions";
-import type {DtoProperty, Magic} from "../index";
-import {DtoUtilities} from "./DtoUtilities";
 import {ValidationErrors} from "./ValidationErrors";
+import {Validator} from "./Validator";
 
-export class DataTransferObject<T> /*implements DataTransferObjectContract<T>*/ {
+export class DataTransferObject<T extends DataTransferObject<any>> /*implements DataTransferObjectContract<T>*/ {
+
+	public validator: Validator<T> = new Validator();
 
 	public static validateOnCreate: boolean = false;
 
