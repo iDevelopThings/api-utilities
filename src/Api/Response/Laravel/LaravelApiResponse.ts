@@ -9,7 +9,13 @@ export class LaravelApiResponse<T extends DataTransferObject<any>, R> extends Ap
 	 * @returns {R}
 	 */
 	get(): R {
-		return (this.dto as any).create(this.response.data);
+		//		return (this.dto as any).create(this.response.data);
+
+		const dto = (this.dto as any).create(this?.response?.data);
+
+		dto.validator = this._validationErrors;
+
+		return dto;
 	}
 
 	protected setValidationErrors() {
